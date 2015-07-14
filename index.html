@@ -1,50 +1,81 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Howard's Socket.IO chat</title>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * { margin: 0; padding: 0; box-sizing: border-box; font-size:12pt;}
       body { font: 13px Helvetica, Arial; }
       form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+	  form select { border: 0; padding: 9px; width: 9%;}
+      form input { border: 0; padding: 10px; width: 80%; margin-right: .5%; }
       form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages {width:100%; position: absolute; top:0; bottom:5%; overflow:auto;}
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
     </style>
   </head>
-  
 <body>
     <ul id="messages">
     </ul>
     <form action="">
-    <input id="m" autocomplete="off" />
-    <button>Send</button>
+		<select id = "userSelect">
+			<option value="all">All</option>
+		</select>
+		<input id="m" autocomplete="off"/>
+		<button>Send</button>
     </form>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.3.js"></script>
     <script>
 		var socket = io();
 		var userName;
-		AskUserName();
+		socket.on('add userList', function (name) {
+			//add user list to selector without user-self
+			if(userName!=name){
+				$("#userSelect").append($("<option></option>").attr("value", name).text(name));
+			}
+        });
 		
 		socket.on('userName exist', function (name) {
             alert("Your user name "+name+" was exist!!");
+			//user name exist, ask again
 			AskUserName();
         });
 		
-        $('form').submit(function () {
-            socket.emit('chat message', userName+": "+$('#m').val());
-            $('#m').val('');
-            return false;
-        });
         socket.on('chat message', function (msg) {
             $('#messages').append($('<li>').text(msg));
+			ScrollBarMoveBottom();
+        });
+		
+		socket.on('private message', function (msg) {
+            $('#messages').append($('<li>').text(msg).css( 'color', '#FF0000' ));
+			ScrollBarMoveBottom();
+        });
+		
+		socket.on('user left', function (Name) {
+            $('#messages').append($('<li>').text(Name + ' Left'));
+			//remove leaved user in selector 
+			$('#userSelect').find('[value="'+Name+'"]').remove();
+			ScrollBarMoveBottom();
+        });
+		
+		$('form').submit(function () {
+			var receiveName = $("#userSelect").find(":selected").val();
+			if(receiveName == 'all'){
+				socket.emit('chat message', userName+": "+$('#m').val());
+			}
+			else{
+				socket.emit('private message', receiveName, userName+" to "+receiveName+": "+$('#m').val());
+			}
+			$('#m').val('');
+			$('#m').focus();
+			return false;
         });
 		
 		$(window).on('beforeunload', function () {
             return "Are you sure want to leave??";
         });
+		
 		$(window).on('unload', function () {
 			socket.emit('user left',userName);
         });
@@ -53,6 +84,14 @@
 			userName = prompt("Please enter your name", "Howard");
 			socket.emit('new user',userName);
 		}
+		
+		//make message scrollbar always at bottom
+		function ScrollBarMoveBottom(){
+			$("#messages").animate({
+				scrollTop: $("#messages")[0].scrollHeight
+			},'slow');
+		}		
+		AskUserName();
     </script>
 </body>
 </html>
