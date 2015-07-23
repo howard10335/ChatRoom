@@ -11,12 +11,11 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+	//send message to all client without self
+    socket.broadcast.emit('chat message', msg);
   });
   
   socket.on('private message', function(receiveName, msg){
-	//send message to user-self
-	socket.emit('private message', msg);
 	//send private message to specify user
 	currentSockets[currentUsers.indexOf(receiveName)].emit('private message', msg);
   });
@@ -26,7 +25,7 @@ io.on('connection', function(socket){
 	if(currentUsers.indexOf(userName)==-1){
 		currentUsers.push(userName);
 		currentSockets.push(socket);
-		io.emit('chat message', userName+' Join');
+		io.emit('user join', userName);
 		io.emit('add userList', userName);
 	}
 	else{

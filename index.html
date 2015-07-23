@@ -52,8 +52,12 @@
 			ScrollBarMoveBottom();
         });
 		
+		socket.on('user join',function (Name) {
+			$('#messages').append($('<li>').text(GetCurrentDate()+ Name + ' Join'));
+		});
+		
 		socket.on('user left', function (Name) {
-            $('#messages').append($('<li>').text(Name + ' Left'));
+            $('#messages').append($('<li>').text(GetCurrentDate()+ Name + ' Left'));
 			//remove leaved user in selector 
 			$('#userSelect').find('[value="'+Name+'"]').remove();
 			ScrollBarMoveBottom();
@@ -62,10 +66,14 @@
 		$('form').submit(function () {
 			var receiveName = $("#userSelect").find(":selected").val();
 			if(receiveName == 'all'){
-				socket.emit('chat message', userName+": "+$('#m').val());
+				var msg = GetCurrentDate() +userName+ ": "+$('#m').val();
+				$('#messages').append($('<li>').text(msg));
+				socket.emit('chat message', msg);
 			}
 			else{
-				socket.emit('private message', receiveName, userName+" to "+receiveName+": "+$('#m').val());
+			var msg = GetCurrentDate()+userName+" to "+receiveName +": "+$('#m').val();
+				$('#messages').append($('<li>').text(msg).css( 'color', '#FF0000' ));
+				socket.emit('private message', receiveName, msg);
 			}
 			$('#m').val('');
 			$('#m').focus();
@@ -90,7 +98,14 @@
 			$("#messages").animate({
 				scrollTop: $("#messages")[0].scrollHeight
 			},'slow');
-		}		
+		}
+		
+		function GetCurrentDate(){
+			var currentdate = new Date(); 
+			var datetime ="[" + currentdate.getHours() + ":" + currentdate.getMinutes() + ":" + currentdate.getSeconds()+"]";
+			return datetime;
+		}
+		
 		AskUserName();
     </script>
 </body>
