@@ -4,6 +4,7 @@ var io = require('socket.io')(http);
 //pair of user's name and user's socket
 var currentUsers = [];
 var currentSockets = [];
+var typingUsers = [];
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -38,6 +39,20 @@ io.on('connection', function(socket){
 	currentSockets.splice(currentUsers.indexOf(name),1);
 	currentUsers.splice(currentUsers.indexOf(name),1);
 	io.emit('user left', name);
+  });
+  
+  socket.on('start typing', function(name){
+	if(typingUsers.indexOf(name)==-1){
+		typingUsers.push(name);
+	}
+	io.emit('typing message', typingUsers);
+  });
+  
+  socket.on('stop typing', function(name){
+	if(typingUsers.indexOf(name)!=-1){
+		typingUsers.splice(typingUsers.indexOf(name),1);
+	}
+	io.emit('typing message', typingUsers);
   });
   
   //when a new client connected add current users to client selector

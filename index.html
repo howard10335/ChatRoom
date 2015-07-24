@@ -9,14 +9,17 @@
 	  form select { border: 0; padding: 9px; width: 9%;}
       form input { border: 0; padding: 10px; width: 80%; margin-right: .5%; }
       form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages {width:100%; position: absolute; top:0; bottom:5%; overflow:auto;}
+      #messages {width:100%; position: absolute; top:0; bottom:65px; overflow:auto;}
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
+	  #typingMessage {background: yellow; width:100%; position: fixed; bottom:45px; font-weight: bold;}
     </style>
   </head>
 <body>
     <ul id="messages">
     </ul>
+	<div id="typingMessage">
+	</div>
     <form action="">
 		<select id = "userSelect">
 			<option value="all">All</option>
@@ -29,6 +32,8 @@
     <script>
 		var socket = io();
 		var userName;
+		var receiveName = 'all';
+
 		socket.on('add userList', function (name) {
 			//add user list to selector without user-self
 			if(userName!=name){
@@ -54,7 +59,17 @@
 		
 		socket.on('user join',function (Name) {
 			$('#messages').append($('<li>').text(GetCurrentDate()+ Name + ' Join'));
+			ScrollBarMoveBottom();
 		});
+		
+		socket.on('typing message', function (typingUsers) {
+			if(typingUsers.length != 0){
+				$('#typingMessage').text(typingUsers + " is typing...");
+			}
+			else{
+				$('#typingMessage').text("");
+			}
+        });
 		
 		socket.on('user left', function (Name) {
             $('#messages').append($('<li>').text(GetCurrentDate()+ Name + ' Left'));
@@ -64,15 +79,16 @@
         });
 		
 		$('form').submit(function () {
-			var receiveName = $("#userSelect").find(":selected").val();
 			if(receiveName == 'all'){
 				var msg = GetCurrentDate() +userName+ ": "+$('#m').val();
 				$('#messages').append($('<li>').text(msg));
+				ScrollBarMoveBottom();
 				socket.emit('chat message', msg);
 			}
 			else{
 			var msg = GetCurrentDate()+userName+" to "+receiveName +": "+$('#m').val();
 				$('#messages').append($('<li>').text(msg).css( 'color', '#FF0000' ));
+				ScrollBarMoveBottom();
 				socket.emit('private message', receiveName, msg);
 			}
 			$('#m').val('');
@@ -80,6 +96,24 @@
 			return false;
         });
 		
+		//change target User
+		$("#userSelect").change(function(){
+			receiveName = $("#userSelect").find(":selected").val();
+			socket.emit('stop typing',userName);
+		});
+		
+		//who is typing
+		$('#m').keyup(function() {
+			if(receiveName == 'all'){
+				if($('#m').val() != ""){
+					socket.emit('start typing',userName);
+				}
+				else{
+					socket.emit('stop typing',userName);
+				}
+			}
+		});
+
 		$(window).on('beforeunload', function () {
             return "Are you sure want to leave??";
         });
