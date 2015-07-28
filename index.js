@@ -34,13 +34,6 @@ io.on('connection', function(socket){
 	}
   });
   
-  socket.on('user left', function(name){
-	//remove leaved user's name and socket
-	currentSockets.splice(currentUsers.indexOf(name),1);
-	currentUsers.splice(currentUsers.indexOf(name),1);
-	io.emit('user left', name);
-  });
-  
   socket.on('start typing', function(name){
 	if(typingUsers.indexOf(name)==-1){
 		typingUsers.push(name);
@@ -53,6 +46,13 @@ io.on('connection', function(socket){
 		typingUsers.splice(typingUsers.indexOf(name),1);
 	}
 	io.emit('typing message', typingUsers);
+  });  
+  
+  socket.on('disconnect', function(){
+	io.emit('user left', currentUsers[currentSockets.indexOf(socket)]);
+	//remove leaved user's name and socket
+	currentSockets.splice(currentSockets.indexOf(socket),1);
+	currentUsers.splice(currentSockets.indexOf(socket),1);
   });
   
   //when a new client connected add current users to client selector
