@@ -28,7 +28,7 @@
 			var currentdate = new Date(); 
 			var filename = currentdate.getFullYear()+'-'+(currentdate.getMonth()+1)+'-'+currentdate.getDate()+'_history.html';
 			link.setAttribute('download', filename);
-			link.setAttribute('href', 'data:text/html;charset=utf-8,' + encodeURIComponent(elHtml));
+			link.setAttribute('href', 'data:text/html; charset=UTF-8,' + '<meta charset="UTF-8" />' + encodeURIComponent(elHtml));
 			link.click(); 
 		}
 	</script>
@@ -192,7 +192,7 @@
 				if (Notification.permission === "granted") {
 					// If it's okay let's create a notification
 					var notification = new Notification("You've got new messages.");
-					setTimeout(notification.close.bind(notification), 500);
+					setTimeout(notification.close.bind(notification), 1000);
 				}
 				// Otherwise, we need to ask the user for permission
 				else if (Notification.permission !== 'denied') {
@@ -200,7 +200,7 @@
 						// If the user accepts, let's create a notification
 						if (permission === "granted") {
 							var notification = new Notification("You've got new messages.");
-							setTimeout(notification.close.bind(notification), 500);
+							setTimeout(notification.close.bind(notification), 1000);
 						}
 					});
 				}
