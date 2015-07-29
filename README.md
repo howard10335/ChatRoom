@@ -1,15 +1,18 @@
-# chat-example
-
-This is the source code for a very simple chat example used for 
+# Chat Room with Node.js and Socket.io
+This is the source code basic from a very simple chat room used 
 the [Getting Started](http://socket.io/get-started/chat/) guide 
 of the Socket.IO website.
 
-Please refer to it to learn how to run this application.
+## Current Features
+- Broadcast a message to connected users when someone connects or disconnects 
+- Support for unique nicknames 
+- Append the message directly as soon as he presses enter 
+- SHow {user} is typing 
+- Show who’s online 
+- Private messaging 
+- Save current messages(for Chrome) 
+- Show desktop notification when receive new message(for Chrome) 
 
-- Broadcast a message to connected users when someone connects or disconnects - **CLEAR** 
-- Add support for nicknames - **CLEAR** 
-- Don’t send the same message to the user that sent it himself. Instead, append the message directly as soon as he presses enter. - **CLEAR**
-- Add “{user} is typing” functionality - **CLEAR**
-- Show who’s online - **CLEAR**
-- Add private messaging - **CLEAR**
+## License
+MIT: http://rem.mit-license.org
 
