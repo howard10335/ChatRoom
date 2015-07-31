@@ -50,9 +50,13 @@ io.on('connection', function(socket){
   
   socket.on('disconnect', function(){
 	io.emit('user left', currentUsers[currentSockets.indexOf(socket)]);
+	if(typingUsers.indexOf(currentUsers[currentSockets.indexOf(socket)])!=-1){
+		typingUsers.splice(typingUsers.indexOf(name),1);
+	}
+	io.emit('typing message', typingUsers);
 	//remove leaved user's name and socket
-	currentSockets.splice(currentSockets.indexOf(socket),1);
 	currentUsers.splice(currentSockets.indexOf(socket),1);
+	currentSockets.splice(currentSockets.indexOf(socket),1);
   });
   
   //when a new client connected add current users to client selector

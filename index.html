@@ -10,7 +10,7 @@
 	  #chatInputBar select {border: 0; padding: 9px; float: left;}
 	  #chatInputBar span { display: block; overflow: hidden; padding: 0 5px;}
 	  #chatInputBar button { border: 0; padding: 10px; width: auto; background: rgb(130, 224, 255); float: right;}
-      #messages {width:100%; position: fixed; top:0; bottom: 8%; overflow:auto;}
+      #messages {width:100%; position: fixed; top:0; bottom: 64px; overflow:auto;}
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
 	  #typingMessage{background: yellow; width:100%;}
@@ -134,6 +134,7 @@
         });
 		
 		$('form').submit(function () {
+			$('#messages').css('bottom',$('#footer').outerHeight());
 			if(receiveName == 'all'){
 				var msg = GetCurrentDate() +userName+ ": "+$('#m').val();
 				$('#messages').append($('<li>').text(msg));
@@ -174,7 +175,9 @@
         });
 		
 		function AskUserName(){
-			userName = prompt("Please enter your name", "Howard");
+			do{
+				userName = prompt("Please enter your name", "Howard");
+			}while(userName == null || userName == '')
 			socket.emit('new user',userName);
 		}
 		
