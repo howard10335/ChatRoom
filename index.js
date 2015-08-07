@@ -49,14 +49,21 @@ io.on('connection', function(socket){
   });  
   
   socket.on('disconnect', function(){
-	io.emit('user left', currentUsers[currentSockets.indexOf(socket)]);
-	if(typingUsers.indexOf(currentUsers[currentSockets.indexOf(socket)])!=-1){
-		typingUsers.splice(typingUsers.indexOf(name),1);
+	if(currentSockets.indexOf(socket)!=-1){
+		//when disconnect username doesn't null, show user left message
+		//problem: sometimes client receive null left message, and nobody was disconnect.
+		if(currentUsers[currentSockets.indexOf(socket)] != null){
+			io.emit('user left', currentUsers[currentSockets.indexOf(socket)]);
+		}
+		//if disconnect user was typing, remove the name from typing list
+		if(typingUsers.indexOf(currentUsers[currentSockets.indexOf(socket)])!=-1){
+			typingUsers.splice(typingUsers.indexOf(currentUsers[currentSockets.indexOf(socket)]),1);
+			io.emit('typing message', typingUsers);
+		}
+		//remove leaved user's name and socket
+		currentUsers.splice(currentSockets.indexOf(socket),1);
+		currentSockets.splice(currentSockets.indexOf(socket),1);
 	}
-	io.emit('typing message', typingUsers);
-	//remove leaved user's name and socket
-	currentUsers.splice(currentSockets.indexOf(socket),1);
-	currentSockets.splice(currentSockets.indexOf(socket),1);
   });
   
   //when a new client connected add current users to client selector
