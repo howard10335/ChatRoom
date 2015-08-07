@@ -133,6 +133,12 @@
 			ScrollBarMoveBottom();
         });
 		
+		socket.on('disconnect', function () {
+			$(window).unbind('beforeunload');
+			alert("Lost connection!!\nRefresh page.");
+			window.location.reload();
+		});
+		
 		$('form').submit(function () {
 			$('#messages').css('bottom',$('#footer').outerHeight());
 			if(receiveName == 'all'){
