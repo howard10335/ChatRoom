@@ -140,18 +140,21 @@
 		});
 		
 		$('form').submit(function () {
-			$('#messages').css('bottom',$('#footer').outerHeight());
-			if(receiveName == 'all'){
-				var msg = GetCurrentDate() +userName+ ": "+$('#m').val();
-				$('#messages').append($('<li>').text(msg));
-				ScrollBarMoveBottom();
-				socket.emit('chat message', msg);
-			}
-			else{
-			var msg = GetCurrentDate()+userName+" to "+receiveName +": "+$('#m').val();
-				$('#messages').append($('<li>').text(msg).css( 'color', '#FF0000' ));
-				ScrollBarMoveBottom();
-				socket.emit('private message', receiveName, msg);
+			//when message doesn't empty
+			if($('#m').val().trim() != ''){
+				$('#messages').css('bottom',$('#footer').outerHeight());
+				if(receiveName == 'all'){
+					var msg = GetCurrentDate() +userName+ ": "+$('#m').val();
+					$('#messages').append($('<li>').text(msg));
+					ScrollBarMoveBottom();
+					socket.emit('chat message', msg);
+				}
+				else{
+				var msg = GetCurrentDate()+userName+" to "+receiveName +": "+$('#m').val();
+					$('#messages').append($('<li>').text(msg).css( 'color', '#FF0000' ));
+					ScrollBarMoveBottom();
+					socket.emit('private message', receiveName, msg);
+				}
 			}
 			$('#m').val('');
 			$('#m').focus();
