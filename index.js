@@ -11,14 +11,14 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-  socket.on('chat message', function(msg){
-	//send message to all client without self
-    socket.broadcast.emit('chat message', msg);
-  });
-  
-  socket.on('private message', function(receiveName, msg){
-	//send private message to specify user
-	currentSockets[currentUsers.indexOf(receiveName)].emit('private message', msg);
+  socket.on('chat message', function(userName, receiveName, msg, currentdate){
+	if(receiveName == 'all'){
+		//send message to all client without self
+		socket.broadcast.emit('chat message', userName, receiveName, msg, currentdate);
+	}
+	else{
+		currentSockets[currentUsers.indexOf(receiveName)].emit('chat message', userName, receiveName, msg, currentdate);
+	}
   });
   
   socket.on('new user', function(userName){
