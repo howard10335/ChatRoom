@@ -10,6 +10,7 @@ of the Socket.IO website.
 - Show {user} is typing 
 - Show who’s online 
 - Private messaging 
+- Sending Picture to eachother
 - Save current messages(for Chrome) 
 - Show desktop notification when receive new message(for Chrome) 
 
