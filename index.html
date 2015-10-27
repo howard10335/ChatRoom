@@ -305,11 +305,16 @@
 				ScrollBarMoveBottom();
 			}
 		}
-		
+	
 		function ChangeDateFormatToTime(currentdate){
 			var date = new Date(currentdate);
-			var datetime ='[' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()+']';
+			var datetime ='[' + Appendzero(date.getHours()) + ':' + Appendzero(date.getMinutes()) + ':' + Appendzero(date.getSeconds())+']';
 			return datetime;
+		}
+
+		function Appendzero(obj){
+			if(obj<10) return "0" +""+ obj;
+			else return obj;
 		}
 		
 		AskUserName();
